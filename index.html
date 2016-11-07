@@ -102,7 +102,7 @@ g.call(xAxis).append("text")
 
 var tracts;
     
-d3.json("ca.json", function(error, ca) {
+d3.json("https://ewmoldycheese.github.io/ca.json", function(error, ca) {
   if (error) throw error;
 
   tracts = topojson.feature(ca, ca.objects.tracts);
