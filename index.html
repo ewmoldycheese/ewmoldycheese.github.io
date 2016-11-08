@@ -173,20 +173,24 @@ function changeColors(){
     }))
     .attr("x", function(d) { return d.x0; })
     .attr("width", function(d) { return d.x1 - d.x0; })
+    .transition()
     .style("fill", function(d) { return d.z; });
     
     xAxis
     .tickValues(color.domain())
     .tickFormat(function(d) { return d > 100 ? formatNumber(d) : null; });
     
-    g.call(xAxis);
+    g
+    .transition()    
+    .call(xAxis);
     
     svg.selectAll("#counties")
     .selectAll("path")
     .data(d3.nest()
-        .key(function(d) { return color(d.properties.population / d.properties.area * 2.58999e6); })
-        .entries(tracts.features.filter(function(d) { return d.properties.area; })))
-      .style("fill", function(d) { return d.key; });
+        .key(function(d) { return color(d.objects.population / d.objects.area * 2.58999e6); })
+        .entries(tracts.features.filter(function(d) { return d.objects.area; })))
+    .transition()
+    .style("fill", function(d) { return d.key; });
     flag = true;
     }
     else{
@@ -204,19 +208,23 @@ function changeColors(){
     }))
     .attr("x", function(d) { return d.x0; })
     .attr("width", function(d) { return d.x1 - d.x0; })
+    .transition()
     .style("fill", function(d) { return d.z; });
     
     xAxis
     .tickValues(color.domain())
     .tickFormat(function(d) { return d >= 100 ? formatNumber(d) : null; });
     
-    g.call(xAxis);
+    g
+    .transition()
+    .call(xAxis);
     
     svg.selectAll("#counties")
     .selectAll("path")
     .data(d3.nest()
-        .key(function(d) { return color(d.properties.population / d.properties.area * 2.58999e6); })
-        .entries(tracts.features.filter(function(d) { return d.properties.area; })))
+        .key(function(d) { return color(d.objects.population / d.objects.area * 2.58999e6); })
+        .entries(tracts.features.filter(function(d) { return d.objects.area; })))
+      .transition()
       .style("fill", function(d) { return d.key; });
     flag = false;
     }
@@ -226,11 +234,13 @@ var flagState = true;
 function changeCensus(){
     if (flagState == false){
     svg.selectAll(".census-border")
+    .transition()
     .style("stroke-opacity", 0);
     flagState = true;
     }
     else{
     svg.selectAll(".census-border")
+    .transition()
     .style("stroke-opacity", 0.3);
     flagState = false;
     }
