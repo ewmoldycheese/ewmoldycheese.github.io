@@ -111,7 +111,7 @@ svg.append("text")
 
 var tracts;
     
-d3.json("al.json", function(error, al) {
+d3.json("https://github.com/ewmoldycheese/ewmoldycheese.github.io/blob/master/al.json", function(error, al) {
   if (error) throw error;
 
   tracts = topojson.feature(al, al.objects.tracts);
