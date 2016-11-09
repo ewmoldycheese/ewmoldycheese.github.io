@@ -222,8 +222,8 @@ function changeColors(){
     svg.selectAll("#counties")
     .selectAll("path")
     .data(d3.nest()
-        .key(function(d) { return color(d.objects.population / d.objects.area * 2.58999e6); })
-        .entries(tracts.features.filter(function(d) { return d.objects.area; })))
+        .key(function(d) { return color(d.properties.population / d.properties.area * 2.58999e6); })
+        .entries(tracts.features.filter(function(d) { return d.properties.area; })))
       .transition()
       .style("fill", function(d) { return d.key; });
     flag = false;
