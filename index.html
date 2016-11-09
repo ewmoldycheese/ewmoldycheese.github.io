@@ -160,7 +160,7 @@ function changeColors(){
     if (flag == false){
     
         color
-    .domain([1, 50, 100, 250, 500, 1000, 2500, 5000])
+    .domain([1, 50, 99, 250, 500, 1000, 2500, 5000])
     .range(["#35D0E9", "#32B9E0", "#2FA2D7", "#2C8CCE", "#2975C5", "#265FBC", "#2348B3", "#2032AA", "#1D1BA1"]);
 
     svg.selectAll("rect")
@@ -171,10 +171,10 @@ function changeColors(){
         z: d
       };
     }))
-    .attr("x", function(d) { return d.x0; })
-    .attr("width", function(d) { return d.x1 - d.x0; })
     .transition()
     .duration(500)
+    .attr("x", function(d) { return d.x0; })
+    .attr("width", function(d) { return d.x1 - d.x0; })
     .style("fill", function(d) { return d.z; });
     
     xAxis
@@ -183,7 +183,6 @@ function changeColors(){
     
     g
     .transition()
-    .duration(500)
     .call(xAxis);
     
     svg.selectAll("#counties")
@@ -209,10 +208,10 @@ function changeColors(){
         z: d
       };
     }))
-    .attr("x", function(d) { return d.x0; })
-    .attr("width", function(d) { return d.x1 - d.x0; })
     .transition()
     .duration(500)
+    .attr("x", function(d) { return d.x0; })
+    .attr("width", function(d) { return d.x1 - d.x0; })
     .style("fill", function(d) { return d.z; });
     
     xAxis
