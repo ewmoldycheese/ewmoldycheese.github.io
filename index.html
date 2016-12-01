@@ -47,7 +47,7 @@ div.tooltip {
   text-align: left;           
   width: 175x;                  
   height: 275px;                 
-  padding: 20px;             
+  padding: 5px;             
   font: 12px sans-serif;        
   background: lightgrey;   
   border: 0px;      
@@ -97,11 +97,11 @@ var bmi = d3.svg.axis()
     .tickSize(13)
     .tickValues(color.domain());
 
-    var g = svg.append("g")
+var g = svg.append("g")
     .attr("class", "key")
     .attr("transform", "translate(230,525)");
     
-    g.selectAll("rect")
+g.selectAll("rect")
     .data(color.range().map(function(d, i) {
       return {
         x0: i ? bmiScale(color.domain()[i - 1]) : bmiScale.range()[0],
