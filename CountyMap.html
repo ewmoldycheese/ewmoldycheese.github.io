@@ -1,0 +1,528 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Obesity and Income</title>
+<style> /* set the CSS */
+/*used colorbrewer2.org*/
+/*http://www.cdc.gov/diabetes/data/county.html bmi data
+https://www.census.gov/did/www/saipe/data/index.html median data
+https://www.icpsr.umich.edu/icpsrweb/NAHDAP/series/64/studies?searchSource=revise&q=%22National+Survey+on+Drug+Use+and+Health%22&sortBy=7
+depression data*/
+body { font: 12px Arial;}
+h1{
+    padding-left: 269.5px;
+    padding-top: 10px;
+    font: 32px sans-seriff;
+}
+path {
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: .5px;
+}
+path:hover {
+    fill: #ccc;
+  stroke: #fff;
+  stroke-width: .5px;
+}
+
+.key path {
+  display: none;
+}
+
+.key line {
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+ .time.axis line,
+.time.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+    
+
+div.tooltip {   
+  position: absolute;           
+  text-align: left;           
+  width: 175x;                  
+  height: 275px;                 
+  padding: 20px;             
+  font: 12px sans-serif;        
+  background: lightgrey;   
+  border: 0px;      
+  border-radius: 8px;
+  pointer-events: none;         
+}
+
+</style>
+<body>
+
+<h1>Obesity and Income in US Counties</h1>
+<!-- load the d3.js library -->    
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="d3.slider.js"></script>
+
+
+<script>
+//Create SVG Element
+var w = 1000;
+var h = 550;
+var mediandata;
+var dataset;
+    
+var path = d3.geo.path();
+    
+var svg = d3.select("body")
+    .append("svg")
+    .attr("width", w)
+    .attr("height", h);  
+    
+var color = d3.scale.threshold()
+    .domain([10, 15, 20, 25, 30, 35, 40, 45])
+    .range(["#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#ef6548", "#d7301f", "#b30000", "#7f0000"]);
+
+//Define Tooltip
+var div = d3.select("body").append("div")   
+    .attr("class", "tooltip")               
+    .style("opacity", 0);
+
+var bmiScale = d3.scale.linear()
+    .domain([0, 45])
+    .range([0, 500]);
+
+var bmi = d3.svg.axis()
+    .scale(bmiScale)
+    .orient("bottom")
+    .tickSize(13)
+    .tickValues(color.domain());
+
+    var g = svg.append("g")
+    .attr("class", "key")
+    .attr("transform", "translate(230,525)");
+    
+    g.selectAll("rect")
+    .data(color.range().map(function(d, i) {
+      return {
+        x0: i ? bmiScale(color.domain()[i - 1]) : bmiScale.range()[0],
+        x1: i < color.domain().length ? bmiScale(color.domain()[i]) : bmiScale.range()[1],
+        z: d
+      };
+    }))
+  .enter().append("rect")
+    .attr("height", 8)
+    .attr("x", function(d) { return (d.x0); })
+    .attr("width", function(d) { return (d.x1 - d.x0); })
+    .style("fill", function(d) { return d.z; });
+
+g.call(bmi).append("text")
+    .attr("class", "caption")
+    .attr("y", -4)
+    .text("Bmi percentage of Adults");
+
+d3.csv("counties.csv", function(data){
+//    color.domain(d3.keys(data[0]).filter(function(key) { 
+  //      return (key !== "FIPS" && key !== "State" && key !== "County"); 
+//    }));
+ /*Changes the input data to a useable format. Parses the data values and chanes the numerical from strings to integers*/
+    data.forEach(function(d) {
+        d.State = d.State;
+        d.FIPS = d.FIPS; //Maybe make into int?
+        d.County = d.County;
+        d.four = +d.four;
+        d.five = +d.five;
+        d.six = +d.six;
+        d.seven = +d.seven;
+        d.eight = +d.eight;
+        d.nine = +d.nine;
+        d.ten = +d.ten;
+        d.eleven = +d.eleven;
+        d.twelve = +d.twelve;
+        d.thirteen = +d.thirteen;
+        });
+    dataset = data;
+    });
+    
+    d3.csv("median.csv", function(data){
+//    color.domain(d3.keys(data[0]).filter(function(key) { 
+  //      return (key !== "FIPS" && key !== "State" && key !== "County"); 
+//    }));
+ /*Changes the input data to a useable format. Parses the data values and chanes the numerical from strings to integers*/
+    data.forEach(function(d) {
+        d.State = d.State;
+        d.Fips = d.Fips; //Maybe make into int?
+        d.County = d.Postal;
+        d.Name = d.Name;
+        d.four = +d.four;
+        d.five = +d.five;
+        d.six = +d.six;
+        d.seven = +d.seven;
+        d.eight = +d.eight;
+        d.nine = +d.nine;
+        d.ten = +d.ten;
+        d.eleven = +d.eleven;
+        d.twelve = +d.twelve;
+        d.thirteen = +d.thirteen;
+        });
+    mediandata = data;
+    });
+
+var medianColor = d3.scale.threshold()
+       .domain([10000,20000,30000,40000,50000,75000,100000,200000])
+        .range(["#ffffe5","#f7fcb9","#d9f0a3","#addd8e","#78c679","#41ab5d","#238443","#006837","#004529"]);
+
+var medianScale = d3.scale.linear()
+    .domain([0, 200000])
+    .range([0, 500]);
+
+var medianAxis = d3.svg.axis()
+    .scale(medianScale)
+    .orient("bottom")
+    .tickSize(13)
+    .tickValues(medianColor.domain())
+    .tickFormat(function(d) { return "$" + d/1000; });
+
+var tmp;
+var toolflag = 1;
+d3.json("testing.json", function(topology) {
+  //if (error) throw error;
+    
+  // Draw county borders.
+  //svg.append("path")
+//      .datum(topojson.mesh(us, us.counties, function(a, b) { return a !== b; }))
+//      .attr("class", "county-border")
+//      .attr("d", path);
+    svg.selectAll("path")
+        .data(topojson.feature(topology, topology.objects.counties).features)
+        .enter().append("path")
+        .attr("d", path)
+      //  .style("fill","green")
+        .attr("id", function(d){
+            if (d.id > 9999){
+                return 'US' + d.id;
+            }
+            else  {
+                return 'US0' + d.id;
+            }
+            })
+    .on("mouseover", function(d) { 
+            div.transition()        
+                .duration(200)      
+                .style("opacity", .85);
+        var name = d3.select(this).attr("class");
+            div.html(name)
+            .style("left", (d3.event.pageX + 10) + "px")     
+            .style("top", (d3.event.pageY - 16) + "px");    
+            })     
+        .on("mouseout", function(d) {       
+            div.transition()        
+                .duration(500)      
+                .style("opacity", 0);   
+                   
+             });
+    
+   // svg.data(dataset)
+    //    .select(function(d){
+    //        return "#US" + d.FIPS;})
+    //    .style("fill", function(d) {return "blue";});
+    
+        //.style("fill", function(d) {return tmp;});
+        //.data(dataset)                                                                                                                                                        
+        //.select(function(d){ 
+        //    console.log(d.FIPS);
+        //    return "#US" + d.FIPS;})
+        //.style("fill", "blue");
+    
+        console.log(topology);
+    
+    var medianNest = d3.nest()
+        .key(function(d) { return d.State + d.FIPS; }).sortKeys(d3.ascending)
+        .entries(mediandata);
+    
+    console.log(medianNest);
+    
+    var bmiNest = d3.nest()
+        .key(function(d) { return d.FIPS; }).sortKeys(d3.ascending)
+        .entries(dataset);
+
+    for (var i = 0; i < dataset.length; i++){
+        d3.select("#US" + dataset[i].FIPS)
+        .attr("class", function(d) {
+            return "<h2>" + dataset[i].State + "<br>" + dataset[i].County
+                + "</h2> <table>"
+                + "<tr><th>Year</th><th>Obesity</th><th>Income</th></tr>"
+                + "<tr>" + "<tr><th>2004</th><th><font color ='#b30000'>" + dataset[i].four;})
+        .style("fill", function(d) {
+            return color(dataset[i].ten);});
+        }
+    var number;
+    var year;
+    for (var j = 0; j < 9; j++){ 
+        for (var i = 0; i < mediandata.length; i++){
+            d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
+            .attr("class", function(d) {
+                 switch(j){
+                        case 0: 
+                            number = mediandata[i].four;
+                            break;
+                        case 1: 
+                            number = mediandata[i].five;
+                            break;
+                        case 2: 
+                            number = mediandata[i].six;
+                            break;
+                        case 3: 
+                            number = mediandata[i].seven;
+                            break;
+                        case 4: 
+                            number = mediandata[i].eight;
+                            break;
+                        case 5: 
+                            number = mediandata[i].nine;
+                            break;
+                        case 6: 
+                            number = mediandata[i].ten;
+                            break;
+                        case 7: 
+                            number = mediandata[i].eleven;
+                            break;
+                        case 8: 
+                            number = mediandata[i].twelve;
+                            break;   
+                 }
+                return d3.select(
+                    "#US" + mediandata[i].State + mediandata[i].Fips)
+                    .attr("class")
+                    +"%</font></th><th><font color='#006837'>$" + number;
+                })
+        }
+        for (var i = 0; i < dataset.length; i++){
+        d3.select("#US" + dataset[i].FIPS)
+        .attr("class", function(d) {
+                             switch(j){
+                        case 0: 
+                            number = dataset[i].five;
+                            year = "2005";
+                            break;
+                        case 1: 
+                            number = dataset[i].six;
+                            year = "2006";
+                            break;
+                        case 2: 
+                            number = dataset[i].seven;
+                            year = "2007";
+                            break;
+                        case 3: 
+                            number = dataset[i].eight;
+                            year = "2008";
+                            break;
+                        case 4: 
+                            number = dataset[i].nine;
+                            year = "2009";
+                            break;
+                        case 5: 
+                            number = dataset[i].ten;
+                            year = "2010";
+                            break;
+                        case 6: 
+                            number = dataset[i].eleven;
+                            year = "2011";
+                            break;
+                        case 7: 
+                            number = dataset[i].twelve;
+                            year = "2012"
+                            break;
+                        case 8: 
+                            number = dataset[i].thirteen;
+                            year = "2013"
+                            break;
+                    }
+            return  d3.select("#US" + dataset[i].FIPS).attr("class")
+                + "</font></tr><tr><th>"+ year + "</th><th><font color ='#b30000'>" + number;});
+        }
+    }
+
+    for (var i = 0; i < mediandata.length; i++){
+            d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
+            .attr("class", function(d) {
+                return d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
+                    .attr("class")
+                    + "%</font></th><th><font color='#006837'>$" + mediandata[i].thirteen + "</font></rh><tr></table>";
+                })
+
+    }
+});//end of json    
+    
+    console.log(dataset);
+    
+    //Time scale 
+    var timeScale = d3.time.scale()
+    .domain([new Date(2004, 0, 1), new Date(2013, 0, 1)])
+    .range([0, 500]);
+
+    var timeAxis = d3.svg.axis()
+    .scale(timeScale)
+    .orient("right")
+    .tickSize(10)
+    .tickFormat(d3.time.format("%Y"));
+    
+    svg.append("g")
+        .attr("class", "axis")
+        .attr('transform', 'translate(900,' + 50 + ')')
+        .call(timeAxis);
+    svg.append("circle")
+        .attr("id", "pointer")
+        .attr("r", 4)
+         .attr("cx", 900)
+        .attr("cy", 50)
+        .style("opacity", .7)
+        .style("fill", "lightgrey");
+    
+    
+    
+
+
+    
+function medianClick2004(){
+    for (var i = 0; i < mediandata.length; i++){
+        d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
+        .transition()
+        .duration(500)
+        .style("fill", function(d) {
+            return medianColor(mediandata[i].four);});
+    }
+    
+    g.selectAll("rect")
+    .data(medianColor.range().map(function(d, i) {
+      return {
+        x0: i ? medianScale(medianColor.domain()[i - 1]) : medianScale.range()[0],
+        x1: i < medianColor.domain().length ? medianScale(medianColor.domain()[i]) : medianScale.range()[1],
+        z: d
+      };
+    }))
+      .transition()
+    .duration(500)
+    .attr("height", 8)
+    .attr("x", function(d) { return (d.x0); })
+    .attr("width", function(d) { return (d.x1 - d.x0); })
+    .style("fill", function(d) { return d.z; });
+
+g.call(medianAxis).select(".caption")
+    .attr("y", -4)
+    .text("Median Household Income in Thousands");   
+}
+    
+function medianClick2010(){
+    for (var i = 0; i < mediandata.length; i++){
+        d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
+        .transition()
+        .duration(500)
+        .style("fill", function(d) {
+            return medianColor(mediandata[i].ten);});
+    }
+    
+    g.selectAll("rect")
+    .data(medianColor.range().map(function(d, i) {
+      return {
+        x0: i ? medianScale(medianColor.domain()[i - 1]) : medianScale.range()[0],
+        x1: i < medianColor.domain().length ? medianScale(medianColor.domain()[i]) : medianScale.range()[1],
+        z: d
+      };
+    }))
+    .transition()
+    .duration(500)
+    .attr("height", 8)
+    .attr("x", function(d) { return (d.x0); })
+    .attr("width", function(d) { return (d.x1 - d.x0); })
+    .style("fill", function(d) { return d.z; });
+
+g.call(medianAxis).select(".caption")
+    .attr("y", -4)
+    .text("Median Household Income in Thousands");    
+}
+    
+function bmiClick2004(){
+    for (var i = 0; i < dataset.length; i++){
+        d3.select("#US" + dataset[i].FIPS)
+        .transition()
+        .duration(500)
+        .style("fill", function(d) {
+            return color(dataset[i].four);});
+    }
+    
+    g.selectAll("rect")
+    .data(color.range().map(function(d, i) {
+      return {
+        x0: i ? bmiScale(color.domain()[i - 1]) : bmiScale.range()[0],
+        x1: i < color.domain().length ? bmiScale(color.domain()[i]) : bmiScale.range()[1],
+        z: d
+      };
+    }))
+    .transition()
+    .duration(500)
+    .attr("height", 8)
+    .attr("x", function(d) { return (d.x0); })
+    .attr("width", function(d) { return (d.x1 - d.x0); })
+    .style("fill", function(d) { return d.z; });
+    
+    g.call(bmi).select(".caption")
+    .attr("y", -4)
+    .text("Bmi percentage of Adults");
+}
+    
+function bmiClick2010(){
+    for (var i = 0; i < dataset.length; i++){
+        d3.select("#US" + dataset[i].FIPS)
+        .transition()
+        .duration(500)
+        .style("fill", function(d) {
+            return color(dataset[i].ten);});
+    }
+    
+    g.selectAll("rect")
+    .data(color.range().map(function(d, i) {
+      return {
+        x0: i ? bmiScale(color.domain()[i - 1]) : bmiScale.range()[0],
+        x1: i < color.domain().length ? bmiScale(color.domain()[i]) : bmiScale.range()[1],
+        z: d
+      };
+    }))
+    .transition()
+    .duration(500)
+    .attr("height", 8)
+    .attr("x", function(d) { return (d.x0); })
+    .attr("width", function(d) { return (d.x1 - d.x0); })
+    .style("fill", function(d) { return d.z; });
+    
+    g.call(bmi).select(".caption")
+    .attr("y", -4)
+    .text("Bmi percentage of Adults");
+}
+
+</script>
+    <div id="option">
+    <input name="Button" 
+           type="button" 
+           value="Median 2004" 
+           onclick="medianClick2004()" />
+    </div>
+        <input name="Button" 
+           type="button" 
+           value="Median 2010" 
+           onclick="medianClick2010()" />
+    </div>
+        <div id="option">
+    <input name="Button" 
+           type="button" 
+           value="BMI 2004" 
+           onclick="bmiClick2004()" />
+    </div>
+    </div>
+        <div id="option">
+    <input name="Button" 
+           type="button" 
+           value="BMI 2010" 
+           onclick="bmiClick2010()" />
+    </div>
+</body>
