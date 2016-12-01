@@ -46,7 +46,7 @@ div.tooltip {
   position: absolute;           
   text-align: left;           
   width: 175x;                  
-  height: 275px;                 
+  height: 225px;                 
   padding: 5px;             
   font: 12px sans-serif;        
   background: lightgrey;   
@@ -248,7 +248,7 @@ d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.json
     for (var i = 0; i < dataset.length; i++){
         d3.select("#US" + dataset[i].FIPS)
         .attr("class", function(d) {
-            return "<strong>" + dataset[i].State + "</strong><strong>" + dataset[i].County
+            return "<strong>" + dataset[i].State + "</strong><br><strong>" + dataset[i].County
                 + "</strong>"
                 + "<table><tr><th>Year</th><th>Obesity</th><th>Income</th></tr>"
                 + "<tr>" + "<tr><th>2004</th><th><font color ='#b30000'>" + dataset[i].four;})
