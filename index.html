@@ -120,7 +120,7 @@ g.call(bmi).append("text")
     .attr("y", -4)
     .text("Bmi percentage of Adults");
 
-d3.csv("counties.csv", function(data){
+d3.csv("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/counties.csv", function(data){
 //    color.domain(d3.keys(data[0]).filter(function(key) { 
   //      return (key !== "FIPS" && key !== "State" && key !== "County"); 
 //    }));
@@ -143,7 +143,7 @@ d3.csv("counties.csv", function(data){
     dataset = data;
     });
     
-    d3.csv("median.csv", function(data){
+    d3.csv("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/mastermedian.csv", function(data){
 //    color.domain(d3.keys(data[0]).filter(function(key) { 
   //      return (key !== "FIPS" && key !== "State" && key !== "County"); 
 //    }));
@@ -184,14 +184,9 @@ var medianAxis = d3.svg.axis()
 
 var tmp;
 var toolflag = 1;
-d3.json("us.json", function(topology) {
+d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/masterus.json", function(topology) {
   //if (error) throw error;
-    
-  // Draw county borders.
-  //svg.append("path")
-//      .datum(topojson.mesh(us, us.counties, function(a, b) { return a !== b; }))
-//      .attr("class", "county-border")
-//      .attr("d", path);
+   
     svg.selectAll("path")
         .data(topojson.feature(topology, topology.objects.counties).features)
         .enter().append("path")
