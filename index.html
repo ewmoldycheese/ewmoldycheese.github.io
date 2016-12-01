@@ -46,10 +46,10 @@ div.tooltip {
   position: absolute;           
   text-align: left;           
   width: 175x;                  
-  height: 225px;                 
-  padding: 5px;             
+  height: 216px;                 
+  padding: 12px;             
   font: 12px sans-serif;        
-  background: lightgrey;   
+  background: lightsteelblue;   
   border: 0px;      
   border-radius: 8px;
   pointer-events: none;         
@@ -120,7 +120,7 @@ g.call(bmi).append("text")
     .attr("y", -4)
     .text("Bmi percentage of Adults");
 
-d3.csv("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/counties.csv", function(data){
+d3.csv("counties.csv", function(data){
 //    color.domain(d3.keys(data[0]).filter(function(key) { 
   //      return (key !== "FIPS" && key !== "State" && key !== "County"); 
 //    }));
@@ -143,7 +143,7 @@ d3.csv("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/counties
     dataset = data;
     });
     
-    d3.csv("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/median.csv", function(data){
+    d3.csv("median.csv", function(data){
 //    color.domain(d3.keys(data[0]).filter(function(key) { 
   //      return (key !== "FIPS" && key !== "State" && key !== "County"); 
 //    }));
@@ -184,7 +184,7 @@ var medianAxis = d3.svg.axis()
 
 var tmp;
 var toolflag = 1;
-d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.json", function(topology) {
+d3.json("us.json", function(topology) {
   //if (error) throw error;
     
   // Draw county borders.
@@ -248,8 +248,8 @@ d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.json
     for (var i = 0; i < dataset.length; i++){
         d3.select("#US" + dataset[i].FIPS)
         .attr("class", function(d) {
-            return "<strong style="text-align:center;">" + dataset[i].State + "</strong><br><strong style="text-align:center;">" + dataset[i].County
-                + "</strong>"
+            return "<strong><div style='text-align:center;'>" + dataset[i].State + "</div></strong><strong><div style='text-align:center;'>" + dataset[i].County
+                + "</div></strong>"
                 + "<table><tr><th>Year</th><th>Obesity</th><th>Income</th></tr>"
                 + "<tr>" + "<tr><th>2004</th><th><font color ='#b30000'>" + dataset[i].four;})
         .style("fill", function(d) {
