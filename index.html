@@ -248,8 +248,8 @@ d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.json
     for (var i = 0; i < dataset.length; i++){
         d3.select("#US" + dataset[i].FIPS)
         .attr("class", function(d) {
-            return "<h4>" + dataset[i].State + "<br>" + dataset[i].County
-                + "</h4> <table>"
+            return "<h3>" + dataset[i].State + "<br>" + dataset[i].County
+                + "</h3> <table>"
                 + "<tr><th>Year</th><th>Obesity</th><th>Income</th></tr>"
                 + "<tr>" + "<tr><th>2004</th><th><font color ='#b30000'>" + dataset[i].four;})
         .style("fill", function(d) {
