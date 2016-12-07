@@ -9,7 +9,8 @@ https://www.census.gov/did/www/saipe/data/index.html median data
 https://www.icpsr.umich.edu/icpsrweb/NAHDAP/series/64/studies?searchSource=revise&q=%22National+Survey+on+Drug+Use+and+Health%22&sortBy=7
 depression data
     https://wonder.cdc.gov/cmf-icd10.html suicide data
-Drag example https://bl.ocks.org/mbostock/6123708*/
+Drag example https://bl.ocks.org/mbostock/6123708
+Elevation map https://www.researchgate.net/figure/262929436_fig6_US-county-elevations-Feet-Elevation-data-were-obtained-on-a-county-by-county10*/
 body { font: 12px Arial;}
 h1{
     padding-left: 269.5px;
@@ -47,7 +48,7 @@ div.tooltip {
   position: absolute;           
   text-align: left;           
   width: 175x;                  
-  height: 216px;                 
+  height: 226px;                 
   padding: 12px;             
   font: 12px sans-serif;        
   background: lightsteelblue;   
@@ -68,7 +69,7 @@ div.tooltip {
 <script>
 //Create SVG Element
 var w = 1100;
-var h = 600;
+var h = 625;
 var mediandata;
 var dataset;
 var medianClick = false;
@@ -120,7 +121,8 @@ g.selectAll("rect")
 g.call(bmi).append("text")
     .attr("class", "caption")
     .attr("y", -4)
-    .text("Obesity percentage of Adults");
+    .text("Obesity percentage of Adults")
+    .attr("cursor", "default");
 
 d3.csv("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/counties.csv", function(data){
 //    color.domain(d3.keys(data[0]).filter(function(key) { 
@@ -183,10 +185,13 @@ var medianAxis = d3.svg.axis()
     .tickSize(13)
     .tickValues(medianColor.domain())
     .tickFormat(function(d) { return "$" + d/1000; });
+    
+    d3.select("medianAxis").selectAll("text")
+    .attr("cursor", "default");
 
 var tmp;
 var toolflag = 1;
-d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.json", function(topology) {
+d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.jsonn", function(topology) {
   //if (error) throw error;
     
   // Draw county borders.
@@ -198,7 +203,6 @@ d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.json
         .data(topojson.feature(topology, topology.objects.counties).features)
         .enter().append("path")
         .attr("d", path)
-      //  .style("fill","green")
         .attr("id", function(d){
             if (d.id > 9999){
                 return 'US' + d.id;
@@ -207,7 +211,8 @@ d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.json
                 return 'US0' + d.id;
             }
             })
-    .on("mouseover", function(d) { 
+        .attr("cursor","crosshair")
+        .on("mouseover", function(d) { 
             div.transition()        
                 .duration(200)      
                 .style("opacity", .85);
@@ -362,33 +367,63 @@ d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.json
     var timeAxis = d3.svg.axis()
     .scale(timeScale)
     .orient("right")
-    .tickSize(20)
+    .tickSize(40)
     .tickFormat(d3.time.format("%Y"));
+    
+    svg.append("rect")
+        .attr("id", "outerDent")
+        .attr("x", 920 - 12.5 - 1.25)
+        .attr("y", 40.5)
+        .attr("cursor", "pointer")
+        .attr("width", 27.5)
+        .attr("height", 575)
+        .attr("rx", 10)         // set the x corner curve radius/        .attr("ry", 10)
+        .style("fill", "#F0F0F0");
+    
+   //     svg.append("rect")
+    // .attr("id", "innerDent")
+    //    .attr("x", 910.25)
+    //    .attr("y", 43.5)
+    //    .attr("cursor", "pointer")
+    //    .attr("width", 21.5)
+    //    .attr("height", 569)
+    //    .attr("rx", 8)         // set the x corner curve radius
+    //    .attr("ry", 8)
+    //    .style("fill", "#F0F0F0");
+    
     
     svg.append("g")
         .attr("class", "time axis")
-        .attr('transform', 'translate(900,' + 25 + ')')
+        .attr('transform', 'translate(900,' + 50 + ')')
         .call(timeAxis)
         .append("text")
+        .attr("cursor", "default")
         .attr("class", "time caption")
-        .attr("y", -10)
+        .attr("y", -20)
         .text("Obesity Data 2004")
-        .style("font-size", "150%");
+        .style("font-size", "175%");
     
         svg.append("circle")
         .attr("id", "pointer")
         .attr("cursor", "pointer")
-        .attr("r", 7.5)
-        .attr("cx", 910)
-        .attr("cy", 25)
+        .attr("r", 12.5)
+        .attr("cx", 920)
+        .attr("cy", 50)
         .style("opacity", .9)
-        .style("fill", "lightgrey")
+        .style("fill", "#3385ff")
         .call(drag);
+        
     
+        d3.select(".time.axis").selectAll("text")
+        .attr("cursor", "default");
+    
+    //Make Buttons
+    
+    //make medium button
         var mButton = svg.select(".time.axis")
         .append("rect")
         .attr("id", "MButton")
-        .attr("x", 70)
+        .attr("x", 90)
         .attr("y", 40)
         .attr("cursor", "pointer")
         .attr("width", 68)
@@ -402,8 +437,8 @@ d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.json
         .attr("cursor", "pointer")
         .attr("class", "MText")
         .attr("y", 61)
-        .attr("x", 74)
-        .text("Median")
+        .attr("x", 94)
+        .text("Income")
         .style("font-size", "150%")
         .style("fill", "white")
         .on("click", function(d){
@@ -413,8 +448,8 @@ d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.json
         .append("rect")
         .attr("id", "OButton")
         .attr("cursor", "pointer")
-        .attr("x", 70)
-        .attr("y", 90)
+        .attr("x", 90)
+        .attr("y", 0)
         .attr("width", 68)
         .attr("height", 30)
         .style("fill", "#b30000")
@@ -425,13 +460,14 @@ d3.json("https://rawgit.com/ewmoldycheese/ewmoldycheese.github.io/master/us.json
         .append("text")
         .attr("cursor", "pointer")
         .attr("class", "OText")
-        .attr("y", 111)
-        .attr("x", 74)
+        .attr("y", 21)
+        .attr("x", 94)
         .text("Obesity")
         .style("font-size", "150%")
         .style("fill", "white")
         .on("click", function(d){
             changeBmi();}); 
+    
     
 function dragstarted(d) {
   d3.event.sourceEvent.stopPropagation();
@@ -442,11 +478,11 @@ function dragged(d) {
 
     d3.select(this).attr("cy", d3.event.y);
 
-    if (d3.select(this).attr("cy") < 25){
-        d3.select(this).attr("cy", 25);
+    if (d3.select(this).attr("cy") < 50){
+        d3.select(this).attr("cy", 50);
     }
-        if (d3.select(this).attr("cy") > 575){
-        d3.select(this).attr("cy", 575);
+        if (d3.select(this).attr("cy") > 600){
+        d3.select(this).attr("cy", 600);
     }
     if (medianClick == true){    
         g.selectAll("rect")
@@ -466,9 +502,9 @@ function dragged(d) {
 
         g.call(medianAxis).select(".caption")
         .attr("y", -4)
-        .text("Median Household Income in Thousands");
-        
-        if (d3.select(this).attr("cy") < 75){
+        .text("Median Household Income in Thousands")
+        .attr("cursor", "default");
+        if (d3.select(this).attr("cy") < 100){
             
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
@@ -479,8 +515,7 @@ function dragged(d) {
             }
             d3.select(".time.caption").text("Median Data 2004");
         }
-        
-        else if (d3.select(this).attr("cy") < 135 ){
+        else if (d3.select(this).attr("cy") < 160 ){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -490,7 +525,7 @@ function dragged(d) {
             }
             d3.select(".time.caption").text("Median Data 2005");
         }
-        else if (d3.select(this).attr("cy") < 190){
+        else if (d3.select(this).attr("cy") < 215){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -500,7 +535,7 @@ function dragged(d) {
             }
             d3.select(".time.caption").text("Median Data 2006");
         }
-        else if (d3.select(this).attr("cy") < 245 ){
+        else if (d3.select(this).attr("cy") < 270 ){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -510,7 +545,7 @@ function dragged(d) {
             }
             d3.select(".time.caption").text("Median Data 2007");
         }
-        else if (d3.select(this).attr("cy") < 300){
+        else if (d3.select(this).attr("cy") < 325){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -520,7 +555,7 @@ function dragged(d) {
             }
             d3.select(".time.caption").text("Median Data 2008");
         }
-        else if (d3.select(this).attr("cy") < 355 ){
+        else if (d3.select(this).attr("cy") < 380 ){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -530,7 +565,7 @@ function dragged(d) {
             }
             d3.select(".time.caption").text("Median Data 2009");
         }
-        else if (d3.select(this).attr("cy") < 410){
+        else if (d3.select(this).attr("cy") < 435){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -539,7 +574,7 @@ function dragged(d) {
                     return medianColor(mediandata[i].ten);});
             }
             d3.select(".time.caption").text("Median Data 2010");
-        }else if (d3.select(this).attr("cy") < 465 ){
+        }else if (d3.select(this).attr("cy") < 490 ){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -549,7 +584,7 @@ function dragged(d) {
             }
             d3.select(".time.caption").text("Median Data 2011");
         }
-        else if (d3.select(this).attr("cy") < 520){
+        else if (d3.select(this).attr("cy") < 545){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -559,7 +594,7 @@ function dragged(d) {
             }
             d3.select(".time.caption").text("Median Data 2012")
         }
-                else if (d3.select(this).attr("cy") < 575){
+                else if (d3.select(this).attr("cy") < 600){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -587,8 +622,9 @@ function dragged(d) {
     
         g.call(bmi).select(".caption")
         .attr("y", -4)
-        .text("Obesity Percentage of Adults");
-        if (d3.select(this).attr("cy") < 75){
+        .text("Obesity Percentage of Adults")
+        .attr("cursor", "default");
+        if (d3.select(this).attr("cy") < 100){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -598,7 +634,7 @@ function dragged(d) {
                 }
             d3.select(".time.caption").text("Obesity Data 2004");
         }
-        else if (d3.select(this).attr("cy") < 135){
+        else if (d3.select(this).attr("cy") < 160){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -608,7 +644,7 @@ function dragged(d) {
                 }
             d3.select(".time.caption").text("Obesity Data 2005");
         }
-        else if (d3.select(this).attr("cy") < 190){
+        else if (d3.select(this).attr("cy") < 215){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -618,7 +654,7 @@ function dragged(d) {
                 }
             d3.select(".time.caption").text("Obesity Data 2006");
         }
-        else if (d3.select(this).attr("cy") < 245){
+        else if (d3.select(this).attr("cy") < 270){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -628,7 +664,7 @@ function dragged(d) {
                 }
             d3.select(".time.caption").text("Obesity Data 2007");
         }
-        else if (d3.select(this).attr("cy") < 300){
+        else if (d3.select(this).attr("cy") < 325){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -638,7 +674,7 @@ function dragged(d) {
                 }
             d3.select(".time.caption").text("Obesity Data 2008");
         }
-        else if (d3.select(this).attr("cy") < 355){
+        else if (d3.select(this).attr("cy") < 380){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -648,7 +684,7 @@ function dragged(d) {
                 }
             d3.select(".time.caption").text("Obesity Data 2009");
         }
-        else if (d3.select(this).attr("cy") < 410){
+        else if (d3.select(this).attr("cy") < 435){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -658,7 +694,7 @@ function dragged(d) {
                 }
             d3.select(".time.caption").text("Obesity Data 2010");
         }
-        else if (d3.select(this).attr("cy") < 465){
+        else if (d3.select(this).attr("cy") < 490){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -668,7 +704,7 @@ function dragged(d) {
                 }
             d3.select(".time.caption").text("Obesity Data 2011");
         }
-        else if (d3.select(this).attr("cy") < 520){
+        else if (d3.select(this).attr("cy") < 545){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -678,7 +714,7 @@ function dragged(d) {
                 }
             d3.select(".time.caption").text("Obesity Data 2012");
         }
-        else if (d3.select(this).attr("cy") < 575){
+        else if (d3.select(this).attr("cy") < 600){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -698,7 +734,7 @@ function dragended(d) {
     
 function changeMedian(){
     medianClick = true;
-            g.selectAll("rect")
+        g.selectAll("rect")
         .data(medianColor.range().map(function(d, i) {
             return {
                 x0: i ? medianScale(medianColor.domain()[i - 1]) : medianScale.range()[0],
@@ -715,9 +751,9 @@ function changeMedian(){
 
         g.call(medianAxis).select(".caption")
         .attr("y", -4)
-        .text("Median Household Income in Thousands");
-        
-        if (d3.select("#pointer").attr("cy") < 75){
+        .text("Median Household Income in Thousands")
+        .attr("cursor", "default");
+        if (d3.select("#pointer").attr("cy") < 100){
             
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
@@ -728,8 +764,7 @@ function changeMedian(){
             }
             d3.select(".time.caption").text("Median Data 2004");
         }
-        
-        else if (d3.select("#pointer").attr("cy") < 135 ){
+        else if (d3.select("#pointer").attr("cy") < 160 ){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -739,7 +774,7 @@ function changeMedian(){
             }
             d3.select(".time.caption").text("Median Data 2005");
         }
-        else if (d3.select("#pointer").attr("cy") < 190){
+        else if (d3.select("#pointer").attr("cy") < 215){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -749,7 +784,7 @@ function changeMedian(){
             }
             d3.select(".time.caption").text("Median Data 2006");
         }
-        else if (d3.select("#pointer").attr("cy") < 245 ){
+        else if (d3.select("#pointer").attr("cy") < 270 ){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -759,7 +794,7 @@ function changeMedian(){
             }
             d3.select(".time.caption").text("Median Data 2007");
         }
-        else if (d3.select("#pointer").attr("cy") < 300){
+        else if (d3.select("#pointer").attr("cy") < 325){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -769,7 +804,7 @@ function changeMedian(){
             }
             d3.select(".time.caption").text("Median Data 2008");
         }
-        else if (d3.select("#pointer").attr("cy") < 355 ){
+        else if (d3.select("#pointer").attr("cy") < 380 ){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -779,7 +814,7 @@ function changeMedian(){
             }
             d3.select(".time.caption").text("Median Data 2009");
         }
-        else if (d3.select("#pointer").attr("cy") < 410){
+        else if (d3.select("#pointer").attr("cy") < 435){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -788,7 +823,7 @@ function changeMedian(){
                     return medianColor(mediandata[i].ten);});
             }
             d3.select(".time.caption").text("Median Data 2010");
-        }else if (d3.select("#pointer").attr("cy") < 465 ){
+        }else if (d3.select("#pointer").attr("cy") < 490 ){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -798,7 +833,7 @@ function changeMedian(){
             }
             d3.select(".time.caption").text("Median Data 2011");
         }
-        else if (d3.select("#pointer").attr("cy") < 520){
+        else if (d3.select("#pointer").attr("cy") < 545){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -808,7 +843,7 @@ function changeMedian(){
             }
             d3.select(".time.caption").text("Median Data 2012")
         }
-        else if (d3.select("#pointer").attr("cy") < 575){
+        else if (d3.select("#pointer").attr("cy") <= 600){
             for (var i = 0; i < mediandata.length; i++){
                 d3.select("#US" + mediandata[i].State + mediandata[i].Fips)
                 .transition()
@@ -822,8 +857,9 @@ function changeMedian(){
     
     
 function changeBmi(){
+    
      medianClick = false;
-     g.selectAll("rect")
+        g.selectAll("rect")
         .data(color.range().map(function(d, i) {
             return {
             x0: i ? bmiScale(color.domain()[i - 1]) : bmiScale.range()[0],
@@ -840,8 +876,9 @@ function changeBmi(){
     
         g.call(bmi).select(".caption")
         .attr("y", -4)
-        .text("Obesity Percentage of Adults");
-        if (d3.select("#pointer").attr("cy") < 75){
+        .text("Obesity Percentage of Adults")
+        .attr("cursor", "default");
+        if (d3.select("#pointer").attr("cy") < 100){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -851,7 +888,7 @@ function changeBmi(){
                 }
             d3.select(".time.caption").text("Obesity Data 2004");
         }
-        else if (d3.select("#pointer").attr("cy") < 135){
+        else if (d3.select("#pointer").attr("cy") < 160){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -861,7 +898,7 @@ function changeBmi(){
                 }
             d3.select(".time.caption").text("Obesity Data 2005");
         }
-        else if (d3.select("#pointer").attr("cy") < 190){
+        else if (d3.select("#pointer").attr("cy") < 215){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -871,7 +908,7 @@ function changeBmi(){
                 }
             d3.select(".time.caption").text("Obesity Data 2006");
         }
-        else if (d3.select("#pointer").attr("cy") < 245){
+        else if (d3.select("#pointer").attr("cy") < 270){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -881,7 +918,7 @@ function changeBmi(){
                 }
             d3.select(".time.caption").text("Obesity Data 2007");
         }
-        else if (d3.select("#pointer").attr("cy") < 300){
+        else if (d3.select("#pointer").attr("cy") < 325){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -891,7 +928,7 @@ function changeBmi(){
                 }
             d3.select(".time.caption").text("Obesity Data 2008");
         }
-        else if (d3.select("#pointer").attr("cy") < 355){
+        else if (d3.select("#pointer").attr("cy") < 380){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -901,7 +938,7 @@ function changeBmi(){
                 }
             d3.select(".time.caption").text("Obesity Data 2009");
         }
-        else if (d3.select("#pointer").attr("cy") < 410){
+        else if (d3.select("#pointer").attr("cy") < 435){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -911,7 +948,7 @@ function changeBmi(){
                 }
             d3.select(".time.caption").text("Obesity Data 2010");
         }
-        else if (d3.select("#pointer").attr("cy") < 465){
+        else if (d3.select("#pointer").attr("cy") < 490){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -921,7 +958,7 @@ function changeBmi(){
                 }
             d3.select(".time.caption").text("Obesity Data 2011");
         }
-        else if (d3.select("#pointer").attr("cy") < 520){
+        else if (d3.select("#pointer").attr("cy") < 545){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -931,7 +968,7 @@ function changeBmi(){
                 }
             d3.select(".time.caption").text("Obesity Data 2012");
         }
-        else if (d3.select("#pointer").attr("cy") < 575){
+        else if (d3.select("#pointer").attr("cy") <= 600){
             for (var i = 0; i < dataset.length; i++){
                 d3.select("#US" + dataset[i].FIPS)
                 .transition()
@@ -941,10 +978,11 @@ function changeBmi(){
                 }
             d3.select(".time.caption").text("Obesity Data 2013");
         }
-}
+        }
 
 </script>
-    
+<p1><br>Obesity has become a growing problem for American citizens. While food shortage has significantly decreased in the past few decades, Obesity has risen significantly <br>especially in lower income neighborhoods. While this correlation does not necessarily represent causation, it helps paint of a picture of what is effecting this growing trend.<br></p1>
+<p2><br>Lower income areas experience a higher obesity rate for possibly several reasons. First, many of these areas do not have access to healthier foods such a fruits and <br>vegetables due to their higher cost. Most of these areas do not have access to farmers markets or well-stocked grocery stores. These local governments also have lower <br>funding, creating less infrastructure to help keep people healthy and informed. Finally, many of the citzens are living below the poverty line and are severely lacking in time, <br>which creates a large incentive for consuming unhealthy, but convenient foods.</p2>
 <p><strong>Created by Greg Chow</strong></p>
 <p>In collaboration with Suresh K Lodha</p>
 <p>Submitted files:</p>
